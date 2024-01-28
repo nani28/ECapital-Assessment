@@ -1,23 +1,27 @@
-import fs from "fs";
-import { QueryError, ResultSetHeader, RowDataPacket } from "mysql2";
-import { connection } from "./connection";
-import path from "path";
+import fs from 'fs'
+import {
+  type QueryError,
+  type ResultSetHeader,
+  type RowDataPacket
+} from 'mysql2'
+import { connection } from './connection'
+import path from 'path'
 
-function connectToDatabase(): Promise<void> {
-  return new Promise<void>((resolve, reject) => {
+async function connectToDatabase (): Promise<void> {
+  await new Promise<void>((resolve, reject) => {
     connection.connect((err: QueryError | null) => {
       if (err) {
-        console.error("Error connecting to database:", err);
-        reject(err);
+        console.error('Error connecting to database:', err)
+        reject(err)
       } else {
-        console.log("Connected to the database");
-        resolve();
+        console.log('Connected to the database')
+        resolve()
       }
-    });
-  });
+    })
+  })
 }
 
-function createTables(): Promise<void> {
+async function createTables (): Promise<void> {
   const sqlScript = `
 
         DROP TABLE IF EXISTS Employee;
@@ -35,34 +39,34 @@ function createTables(): Promise<void> {
             salary INT NOT NULL,
             departmentId INT,
             FOREIGN KEY (departmentId) REFERENCES Department(id)
-        ) AUTO_INCREMENT = 1;`;
+        ) AUTO_INCREMENT = 1;`
 
-  return new Promise<void>((resolve, reject) => {
+  await new Promise<void>((resolve, reject) => {
     connection.query(sqlScript, (error, results, fields) => {
       if (error) {
-        console.error("Error initializing database:", error);
-        reject(error);
+        console.error('Error initializing database:', error)
+        reject(error)
       } else {
-        console.log("Database initialized successfully");
-        resolve();
+        console.log('Database initialized successfully')
+        resolve()
       }
-    });
-  });
+    })
+  })
 }
 
-async function insertData(): Promise<void> {
+async function insertData (): Promise<void> {
   // Read data from data.json
-  const file = path.join("data.json");
-  const jsonData = fs.readFileSync(file, "utf-8");
-  const data = JSON.parse(jsonData);
+  const file = path.join('data.json')
+  const jsonData = fs.readFileSync(file, 'utf-8')
+  const data = JSON.parse(jsonData)
 
   // Insert departments first
-  const departmentSet = new Set<string>(); // Set to store department names
-  const departmentMap = new Map<string, number>(); // Map to store department names and IDs
+  const departmentSet = new Set<string>() // Set to store department names
+  const departmentMap = new Map<string, number>() // Map to store department names and IDs
 
   data.employees.forEach((employee: any) => {
-    departmentSet.add(employee.department);
-  });
+    departmentSet.add(employee.department)
+  })
 
   for (const department of departmentSet) {
     await new Promise<void>((resolve, reject) => {
@@ -70,74 +74,74 @@ async function insertData(): Promise<void> {
         `INSERT INTO Department (name) VALUES ('${department}')`,
         (err, result) => {
           if (err) {
-            console.error("Error inserting department: " + err.message);
-            reject(err);
+            console.error('Error inserting department: ' + err.message)
+            reject(err)
           } else {
-            const row = result as ResultSetHeader;
-            departmentMap.set(department, row.insertId);
-            resolve();
+            const row = result as ResultSetHeader
+            departmentMap.set(department, row.insertId)
+            resolve()
           }
         }
-      );
-    });
+      )
+    })
   }
 
-  console.log("Departments inserted successfully");
+  console.log('Departments inserted successfully')
 
-  async function insertEmployees(): Promise<void> {
+  async function insertEmployees (): Promise<void> {
     for (const employee of data.employees) {
-      let departmentId = await getDepartmentId(employee.department);
+      const departmentId = await getDepartmentId(employee.department)
       if (departmentId !== null) {
-        const { firstName, lastName, salary } = employee;
-        const sql = `INSERT INTO Employee (firstName, lastName, salary, departmentId) VALUES ('${firstName}', '${lastName}', ${salary}, ${departmentId})`;
+        const { firstName, lastName, salary } = employee
+        const sql = `INSERT INTO Employee (firstName, lastName, salary, departmentId) VALUES ('${firstName}', '${lastName}', ${salary}, ${departmentId})`
 
         // Execute the SQL query
         await new Promise<void>((resolve, reject) => {
           connection.query(sql, (err, result) => {
             if (err) {
-              console.error("Error inserting employee: " + err.message);
-              reject(err);
+              console.error('Error inserting employee: ' + err.message)
+              reject(err)
             } else {
-              const row = result as ResultSetHeader;
-              console.log("Inserted employee with ID " + row.insertId);
-              resolve();
+              const row = result as ResultSetHeader
+              console.log('Inserted employee with ID ' + row.insertId)
+              resolve()
             }
-          });
-        });
+          })
+        })
       }
     }
   }
 
-  await insertEmployees();
+  await insertEmployees()
 }
 
-export async function main() {
+export async function main () {
   try {
-    await connectToDatabase();
-    await createTables();
-    await insertData();
+    await connectToDatabase()
+    await createTables()
+    await insertData()
   } catch (error) {
-    console.error("Error:", error);
+    console.error('Error:', error)
   }
 }
 
-async function getDepartmentId(departmentName: string): Promise<number | null> {
-  return new Promise<number | null>((resolve, reject) => {
+async function getDepartmentId (departmentName: string): Promise<number | null> {
+  return await new Promise<number | null>((resolve, reject) => {
     connection.query(
       `SELECT id FROM Department WHERE name = '${departmentName}'`,
       (err, result) => {
         if (err) {
-          console.error("Error checking existing department: " + err.message);
-          reject(err);
-          return;
+          console.error('Error checking existing department: ' + err.message)
+          reject(err)
+          return
         }
-        const rows = result as RowDataPacket[];
+        const rows = result as RowDataPacket[]
         if (rows.length > 0) {
-          resolve(rows[0].id);
+          resolve(rows[0].id)
         } else {
-          resolve(null); // Department not found
+          resolve(null) // Department not found
         }
       }
-    );
-  });
+    )
+  })
 }

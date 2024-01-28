@@ -1,75 +1,76 @@
-import express, { Router, Request, Response } from "express";
+/* eslint-disable @typescript-eslint/no-misused-promises */
+import express, { type Router, type Request, type Response } from 'express'
 import {
   getEmployees,
   editEmployee,
   createEmployee,
   deleteEmployee,
-  fetchEmployeeById,
-} from "../utils/employee";
-import Employee from "../model/Employee";
-import { QueryError } from "mysql2";
+  fetchEmployeeById
+} from '../utils/employee'
+import type Employee from '../model/Employee'
+import { type QueryError } from 'mysql2'
 
-let employeeRouter: Router = express.Router();
+const employeeRouter: Router = express.Router()
 
-employeeRouter.get("/", async (req: Request, res: Response, next) => {
-  getEmployees((error: QueryError | null, employees?: Employee[]) => {
+employeeRouter.get('/', async (_req: Request, res: Response, _next) => {
+  void getEmployees((error: QueryError | null, employees?: Employee[]) => {
     if (error) {
-      console.error("Error fetching users:", error);
-      return;
+      console.error('Error fetching users:', error)
+      return
     }
     if (employees) {
-      res.status(200).send(employees);
+      res.status(200).send(employees)
     } else {
-      res.status(404).send({ message: "No employees found" });
+      res.status(404).send({ message: 'No employees found' })
     }
-  });
-});
+  })
+})
 
-employeeRouter.get("/:id", async (req: Request, res: Response) => {
-  fetchEmployeeById(
+employeeRouter.get('/:id', async (req: Request, res: Response) => {
+  void fetchEmployeeById(
     parseInt(req.params.id),
     (error: QueryError | null, employee: Employee | null) => {
       if (error) {
-        console.error("Error fetching users:", error);
-        return;
+        console.error('Error fetching users:', error)
+        return
       }
       if (employee) {
-        res.status(200).send(employee);
+        res.status(200).send(employee)
       } else {
-        res.status(404).send({ message: "Employee not found" });
+        res.status(404).send({ message: 'Employee not found' })
       }
     }
-  );
-});
+  )
+})
 
-employeeRouter.put("/:id", async (req: Request, res: Response) => {
-  editEmployee(parseInt(req.params.id), req.body, (error) => {
+employeeRouter.put('/:id', async (req: Request, res: Response) => {
+  void editEmployee(parseInt(req.params.id), req.body, (error) => {
     if (error) {
-      console.error("Error updating employee:", error);
-      return;
+      console.error('Error updating employee:', error)
+      return
     }
-    res.status(200).send({ message: "Employee updated successfully" });
-  });
-});
+    res.status(200).send({ message: 'Employee updated successfully' })
+  })
+})
 
-employeeRouter.post("/", async (req: Request, res: Response) => {
-  createEmployee(req.body, (error, insertedId) => {
+employeeRouter.post('/', async (req: Request, res: Response) => {
+  void createEmployee(req.body, (error, _insertedId) => {
     if (error) {
-      console.error("Error creating employee:", error);
-      return;
+      console.error('Error creating employee:', error)
+      return
     }
-    res.status(201).send({ message: "Employee created successfully" });
-  });
-});
+    res.status(201).send({ message: 'Employee created successfully' })
+  })
+})
 
-employeeRouter.delete("/:id", async (req: Request, res: Response) => {
-  deleteEmployee(parseInt(req.params.id), (error) => {
+employeeRouter.delete('/:id', async (req: Request, res: Response) => {
+  void deleteEmployee(parseInt(req.params.id), (error) => {
     if (error) {
-      console.error("Error deleting employee:", error);
-      return;
+      console.error('Error deleting employee:', error)
+      return
     }
-    res.status(200).send({ message: "Employee deleted successfully" });
-  });
-});
+    res.status(200).send({ message: 'Employee deleted successfully' })
+  })
+})
 
-export default employeeRouter;
+export default employeeRouter
