@@ -28,5 +28,5 @@ dotenv.config();
 //   res.redirect("")
 // });
 
-app.use("/employee", employeeRouter);
-app.use("/department", departmentRouter);
+app.use("/employees", employeeRouter);
+app.use("/departments", departmentRouter);

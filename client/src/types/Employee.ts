@@ -1,0 +1,7 @@
+export type Employee = {
+  id: number;
+  firstName: string;
+  lastName: string;
+  department: string;
+  salary: number;
+};
