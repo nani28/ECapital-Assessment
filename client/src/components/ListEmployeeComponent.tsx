@@ -21,7 +21,7 @@ const ListEmployeeComponent: React.FC<{}> = () => {
       });
   };
 
-  const deleteEmployee = (employeeId:number) => {
+  const deleteEmployee = (employeeId: number) => {
     EmployeeService.deleteEmployee(employeeId)
       .then((response) => {
         getAllEmployees();
@@ -54,7 +54,7 @@ const ListEmployeeComponent: React.FC<{}> = () => {
               <td> {employee.firstName} </td>
               <td>{employee.lastName}</td>
               <td>{employee.department}</td>
-              <td>{employee.salary}</td>
+              <td>$ {employee.salary.toLocaleString()}</td>
               <td>
                 <Link
                   className="btn btn-info"
@@ -63,7 +63,7 @@ const ListEmployeeComponent: React.FC<{}> = () => {
                 </Link>
                 <button
                   className="btn btn-danger"
-                  onClick={() => deleteEmployee(employee.id)}
+                  onClick={() => deleteEmployee(employee.id!)}
                   style={{ marginLeft: "10px" }}>
                   Delete
                 </button>

@@ -4,39 +4,42 @@ import {
   editEmployee,
   createEmployee,
   deleteEmployee,
-  fetchEmployeeById
+  fetchEmployeeById,
 } from "../utils/employee";
 import Employee from "../model/Employee";
 import { QueryError } from "mysql2";
 
 let employeeRouter: Router = express.Router();
 
-employeeRouter.get("/", async (req: Request, res: Response) => {
+employeeRouter.get("/", async (req: Request, res: Response, next) => {
   getEmployees((error: QueryError | null, employees?: Employee[]) => {
     if (error) {
       console.error("Error fetching users:", error);
       return;
     }
     if (employees) {
-    res.status(200).send(employees);
+      res.status(200).send(employees);
     } else {
-      res.status(404).send("No employees found");
+      res.status(404).send({ message: "No employees found" });
     }
   });
 });
 
 employeeRouter.get("/:id", async (req: Request, res: Response) => {
-  fetchEmployeeById(parseInt(req.params.id),(error: QueryError | null, employee: Employee | null) => {
-    if (error) {
-      console.error("Error fetching users:", error);
-      return;
+  fetchEmployeeById(
+    parseInt(req.params.id),
+    (error: QueryError | null, employee: Employee | null) => {
+      if (error) {
+        console.error("Error fetching users:", error);
+        return;
+      }
+      if (employee) {
+        res.status(200).send(employee);
+      } else {
+        res.status(404).send({ message: "Employee not found" });
+      }
     }
-    if(employee){
-    res.status(200).send(employee);}
-    else{
-      res.status(404).send("Employee not found");
-    }
-  });
+  );
 });
 
 employeeRouter.put("/:id", async (req: Request, res: Response) => {
@@ -45,7 +48,7 @@ employeeRouter.put("/:id", async (req: Request, res: Response) => {
       console.error("Error updating employee:", error);
       return;
     }
-    res.status(200).send("Employee updated successfully");
+    res.status(200).send({ message: "Employee updated successfully" });
   });
 });
 
@@ -55,7 +58,7 @@ employeeRouter.post("/", async (req: Request, res: Response) => {
       console.error("Error creating employee:", error);
       return;
     }
-    res.status(201).send("Employee created successfully");
+    res.status(201).send({ message: "Employee created successfully" });
   });
 });
 
@@ -65,7 +68,7 @@ employeeRouter.delete("/:id", async (req: Request, res: Response) => {
       console.error("Error deleting employee:", error);
       return;
     }
-    res.status(200).send("Employee deleted successfully");
+    res.status(200).send({ message: "Employee deleted successfully" });
   });
 });
 

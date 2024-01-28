@@ -6,7 +6,7 @@ import departmentRouter from "./server/routes/department";
 
 var cors = require("cors");
 
-export const  app: Express = express();
+export const app: Express = express();
 
 app.use(express.json());
 // for encoding the URL

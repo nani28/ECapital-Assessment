@@ -2,6 +2,7 @@ import axios from "axios";
 import { Employee } from "../types/Employee";
 
 const EMPLOYEE_API_BASE_URL = "http://localhost:8080/employees";
+const DEPARTMENT_API_BASE_URL = "http://localhost:8080/departments";
 
 class EmployeeService {
   getAllEmployees() {
@@ -22,6 +23,10 @@ class EmployeeService {
 
   deleteEmployee(employeeId:number) {
     return axios.delete(EMPLOYEE_API_BASE_URL + "/" + employeeId);
+  }
+
+  getAllDepartments() {
+    return axios.get(DEPARTMENT_API_BASE_URL);
   }
 }
 
