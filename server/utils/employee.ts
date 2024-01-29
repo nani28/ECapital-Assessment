@@ -1,4 +1,4 @@
-import { type OkPacket, type QueryError, type RowDataPacket } from 'mysql2'
+import { type ResultSetHeader, type QueryError, type RowDataPacket } from 'mysql2'
 import { connection } from '../db/connection'
 import type Employee from '../model/Employee'
 
@@ -207,7 +207,7 @@ async function insertEmployee (
           reject(error)
           return
         }
-        const rows = results as OkPacket
+        const rows = results as ResultSetHeader
 
         resolve(rows.insertId) // Pass the inserted id back
       }

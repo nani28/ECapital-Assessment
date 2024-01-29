@@ -6,6 +6,7 @@ import {
 } from 'mysql2'
 import { connection } from './connection'
 import path from 'path'
+import queries from './dbQueries'
 
 async function connectToDatabase (): Promise<void> {
   await new Promise<void>((resolve, reject) => {
@@ -22,27 +23,8 @@ async function connectToDatabase (): Promise<void> {
 }
 
 async function createTables (): Promise<void> {
-  const sqlScript = `
-
-        DROP TABLE IF EXISTS Employee;
-        DROP TABLE IF EXISTS Department;
-
-        CREATE TABLE IF NOT EXISTS Department (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            name VARCHAR(255) NOT NULL UNIQUE
-        ) AUTO_INCREMENT = 1;
-
-        CREATE TABLE IF NOT EXISTS Employee (
-            id INT PRIMARY KEY AUTO_INCREMENT,
-            firstName VARCHAR(255) NOT NULL,
-            lastName VARCHAR(255) NOT NULL,
-            salary INT NOT NULL,
-            departmentId INT,
-            FOREIGN KEY (departmentId) REFERENCES Department(id)
-        ) AUTO_INCREMENT = 1;`
-
   await new Promise<void>((resolve, reject) => {
-    connection.query(sqlScript, (error, results, fields) => {
+    connection.query(queries.SQL_SCRIPT, (error, results, fields) => {
       if (error) {
         console.error('Error initializing database:', error)
         reject(error)

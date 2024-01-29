@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
 import { Employee } from "../types/Employee";
+import ButtonComponent from "./ui/Button";
+import TableComponent from "./TableComponent";
 
 const ListEmployeeComponent: React.FC<{}> = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -14,7 +15,6 @@ const ListEmployeeComponent: React.FC<{}> = () => {
     EmployeeService.getAllEmployees()
       .then((response) => {
         setEmployees(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         console.log(error);
@@ -33,45 +33,21 @@ const ListEmployeeComponent: React.FC<{}> = () => {
 
   return (
     <div className="container">
-      <h2 className="text-center"> List Employees </h2>
-      <Link to="/add-employee" className="btn btn-primary mb-2">
-        {" "}
-        Add Employee{" "}
-      </Link>
-      <table className="table table-bordered table-striped">
-        <thead>
-          <th> Employee Id </th>
-          <th> Employee First Name </th>
-          <th> Employee Last Name </th>
-          <th> Employee Department </th>
-          <th> Employee Salary </th>
-          <th> Actions </th>
-        </thead>
-        <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.id}>
-              <td> {employee.id} </td>
-              <td> {employee.firstName} </td>
-              <td>{employee.lastName}</td>
-              <td>{employee.department}</td>
-              <td>$ {employee.salary.toLocaleString()}</td>
-              <td>
-                <Link
-                  className="btn btn-info"
-                  to={`/edit-employee/${employee.id}`}>
-                  Update
-                </Link>
-                <button
-                  className="btn btn-danger"
-                  onClick={() => deleteEmployee(employee.id!)}
-                  style={{ marginLeft: "10px" }}>
-                  Delete
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className="d-flex justify-content-between">
+        <div className="d-flex justify-content-start">
+          <h2 className="text-start"> List of Employees </h2>
+        </div>
+        <div className="d-flex justify-content-end">
+          <ButtonComponent
+            to="/add-employee"
+            classes="btn btn-primary mb-2 mt-2 text-end"
+            content="Add Employee"
+          />
+        </div>
+      </div>
+      <div>
+        <TableComponent employees={employees} deleteEmployee={deleteEmployee} />
+      </div>
     </div>
   );
 };
