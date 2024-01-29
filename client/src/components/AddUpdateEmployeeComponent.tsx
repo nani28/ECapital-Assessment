@@ -12,7 +12,17 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
   const [department, setDepartment] = useState<string>("");
   const [salary, setSalary] = useState<number>(0);
   const [listDepartments, setListDepartments] = useState<Department[]>([]);
-  const [errors, setErrors] = useState<any>({});
+  const [errors, setErrors] = useState<any>({
+    firstName: null,
+    lastName: null,
+    salary: null,
+  });
+
+  const [touchedFields, setTouchedFields] = useState<any>({
+    firstName: false,
+    lastName: false,
+    salary: false,
+  });
 
   const { id } = useParams();
   const employeeId = id ? parseInt(id) : null;
@@ -80,6 +90,9 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
     return isValid;
   };
 
+  const handleBlur = (field: string) => {
+    setTouchedFields({ ...touchedFields, [field]: true });
+  };
   useEffect(() => {
     validateForm();
   }, [firstName, lastName, department, salary, listDepartments]);
@@ -127,7 +140,8 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
                   name="firstName"
                   value={firstName}
                   onChange={(e) => setFirstName(e.target.value!)}
-                  error={errors.firstName}
+                  error={touchedFields.firstName && errors.firstName}
+                  onBlur={() => handleBlur("firstName")}
                 />
 
                 <FormInput
@@ -138,7 +152,8 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
                   name="lastName"
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value!)}
-                  error={errors.lastName}
+                  onBlur={() => handleBlur("lastName")}
+                  error={touchedFields.lastName && errors.lastName}
                 />
 
                 <div className="form-group mb-2">
@@ -164,7 +179,8 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
                   name="salary"
                   value={salary.toString()}
                   onChange={(e) => setSalary(parseInt(e.target.value))}
-                  error={errors.salary}
+                  onBlur={() => handleBlur("salary")}
+                  error={touchedFields.salary && errors.salary}
                 />
                 <div className="btn-group align-center gap-2 d-md-flex justify-content-md-center">
                   <button

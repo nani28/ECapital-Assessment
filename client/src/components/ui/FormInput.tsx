@@ -9,6 +9,7 @@ const FormInput: React.FC<{
   value: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   error: string;
+  onBlur?: () => void;
 }> = (props) => {
   return (
     <>
@@ -20,7 +21,8 @@ const FormInput: React.FC<{
           name={props.name}
           className={props.classes}
           value={props.value}
-          onChange={(event) => props.onChange(event)}></input>
+          onChange={(event) => props.onChange(event)}
+          onBlur={props.onBlur}></input>
       </div>
       {props.error && <div className="text-danger">{props.error}</div>}
     </>

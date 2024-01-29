@@ -26,7 +26,14 @@ const TableRowComponent: React.FC<{
               to={`/`}
               classes="btn btn-danger"
               content="Delete"
-              onClick={() => props.deleteEmployee(props.employee.id!)}
+              onClick={() => {
+                const confirmDelete = window.confirm(
+                  "Are you sure you want to delete this employee?"
+                );
+                if (confirmDelete) {
+                  props.deleteEmployee(props.employee.id!);
+                }
+              }}
             />
           </div>
         </div>
