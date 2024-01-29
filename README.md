@@ -18,10 +18,11 @@ Follow the below steps to run the project:
    npm install .
    npm run build
    ```
-5. Start the server.
+5. Go to the first terminal and start the server.
    `npm run start`
-6. Start the client.
+6. Go to the second terminal and start the client.
    `npm run prod`
+7. Open browser and visit http://localhost:3000/.
 
 Assumptions :
 
