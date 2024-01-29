@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import EmployeeService from "../services/EmployeeService";
 import { Employee } from "../types/Employee";
 import ButtonComponent from "./ui/Button";
-import TableComponent from "./TableComponent";
+import TableComponent from "./table/TableComponent";
 
 const ListEmployeeComponent: React.FC<{}> = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);

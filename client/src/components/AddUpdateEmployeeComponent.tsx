@@ -1,7 +1,10 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from "react";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import EmployeeService from "../services/EmployeeService";
 import { Department } from "../types/Department";
+import FormInput from "./ui/FormInput";
+import ButtonComponent from "./ui/Button";
 
 const AddUpdateEmployeeComponent: React.FC<{}> = () => {
   const [firstName, setFirstName] = useState<string>("");
@@ -9,44 +12,77 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
   const [department, setDepartment] = useState<string>("");
   const [salary, setSalary] = useState<number>(0);
   const [listDepartments, setListDepartments] = useState<Department[]>([]);
+  const [errors, setErrors] = useState<any>({});
 
   const { id } = useParams();
   const employeeId = id ? parseInt(id) : null;
 
   const saveOrUpdateEmployee = async (e: React.MouseEvent) => {
     e.preventDefault();
-    if (employeeId) {
-      EmployeeService.updateEmployee(employeeId, {
-        id: employeeId,
-        firstName,
-        lastName,
-        department,
-        salary,
-      })
-        .then((response: any) => {
-          console.log(response);
-          window.location.href = "/employees";
+    if (validateForm()) {
+      if (employeeId) {
+        EmployeeService.updateEmployee(employeeId, {
+          id: employeeId,
+          firstName,
+          lastName,
+          department,
+          salary,
         })
-        .catch((error: any) => {
-          console.log(error);
-        });
-    } else {
-      EmployeeService.createEmployee({
-        id: null,
-        firstName,
-        lastName,
-        department,
-        salary,
-      })
-        .then((response: any) => {
-          console.log(response.data);
-          window.location.href = "/employees";
+          .then((response: any) => {
+            console.log(response);
+            window.location.href = "/employees";
+          })
+          .catch((error: any) => {
+            console.log(error);
+          });
+      } else {
+        EmployeeService.createEmployee({
+          id: null,
+          firstName,
+          lastName,
+          department,
+          salary,
         })
-        .catch((error: any) => {
-          console.log(error);
-        });
+          .then((response: any) => {
+            console.log(response.data);
+            window.location.href = "/employees";
+          })
+          .catch((error: any) => {
+            console.log(error);
+          });
+      }
     }
   };
+
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors: any = {};
+
+    if (!firstName.trim()) {
+      newErrors.firstName = "First Name is required";
+      isValid = false;
+    }
+
+    if (!lastName.trim()) {
+      newErrors.lastName = "Last Name is required";
+      isValid = false;
+    }
+
+    if (salary <= 0) {
+      newErrors.salary = "Salary must be greater than 0";
+      isValid = false;
+    } else if (salary >= 2147483647) {
+      newErrors.salary = "Please enter valid Salary";
+      isValid = false;
+    }
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
+  useEffect(() => {
+    validateForm();
+  }, [firstName, lastName, department, salary, listDepartments]);
 
   useEffect(() => {
     EmployeeService.getAllDepartments().then((response: any) => {
@@ -83,27 +119,27 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
             {title()}
             <div className="card-body">
               <form>
-                <div className="form-group mb-2">
-                  <label className="form-label"> First Name :</label>
-                  <input
-                    type="text"
-                    placeholder="Enter first name"
-                    name="firstName"
-                    className="form-control"
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}></input>
-                </div>
+                <FormInput
+                  label="First Name :"
+                  type="text"
+                  classes="form-control mb-2"
+                  placeholder="First Name"
+                  name="firstName"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value!)}
+                  error={errors.firstName}
+                />
 
-                <div className="form-group mb-2">
-                  <label className="form-label"> Last Name :</label>
-                  <input
-                    type="text"
-                    placeholder="Enter last name"
-                    name="lastName"
-                    className="form-control"
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}></input>
-                </div>
+                <FormInput
+                  label="Last Name :"
+                  type="text"
+                  classes="form-control mb-2"
+                  placeholder="Last Name"
+                  name="lastName"
+                  value={lastName}
+                  onChange={(e) => setLastName(e.target.value!)}
+                  error={errors.lastName}
+                />
 
                 <div className="form-group mb-2">
                   <label className="form-label"> Department</label>
@@ -120,28 +156,34 @@ const AddUpdateEmployeeComponent: React.FC<{}> = () => {
                   </select>
                 </div>
 
-                <div className="form-group mb-2">
-                  <label className="form-label"> Salary</label>
-                  <input
-                    type="number"
-                    placeholder="Enter Salary"
-                    name="salary"
-                    className="form-control"
-                    value={salary}
-                    onChange={(e) =>
-                      setSalary(parseInt(e.target.value))
-                    }></input>
+                <FormInput
+                  label="Salary"
+                  type="number"
+                  classes="form-control mb-2"
+                  placeholder="Salary"
+                  name="salary"
+                  value={salary.toString()}
+                  onChange={(e) => setSalary(parseInt(e.target.value))}
+                  error={errors.salary}
+                />
+                <div className="btn-group align-center gap-2 d-md-flex justify-content-md-center">
+                  <button
+                    className="btn btn-success"
+                    disabled={
+                      errors.firstName ||
+                      errors.lastName ||
+                      errors.department ||
+                      errors.salary
+                    }
+                    onClick={saveOrUpdateEmployee}>
+                    Submit{" "}
+                  </button>
+                  <ButtonComponent
+                    to="/employees"
+                    classes="btn btn-danger"
+                    content="Cancel"
+                  />
                 </div>
-
-                <button
-                  className="btn btn-success"
-                  onClick={saveOrUpdateEmployee}>
-                  Submit{" "}
-                </button>
-                <Link to="/employees" className="btn btn-danger">
-                  {" "}
-                  Cancel{" "}
-                </Link>
               </form>
             </div>
           </div>

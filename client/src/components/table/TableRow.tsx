@@ -1,6 +1,6 @@
 import React from "react";
-import ButtonComponent from "./ui/Button";
-import { Employee } from "../types/Employee";
+import ButtonComponent from "../ui/Button";
+import { Employee } from "../../types/Employee";
 
 const TableRowComponent: React.FC<{
   employee: Employee;

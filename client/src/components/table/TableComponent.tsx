@@ -1,5 +1,5 @@
 import React from "react";
-import { Employee } from "../types/Employee";
+import { Employee } from "../../types/Employee";
 import TableRowComponent from "./TableRow";
 
 const TableComponent: React.FC<{
